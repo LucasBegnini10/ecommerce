@@ -3,7 +3,7 @@ package com.server.ecommerce.token;
 import com.server.ecommerce.token.exception.InvalidTokenException;
 import org.springframework.security.core.Authentication;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 
 public interface TokenService {
 
@@ -11,6 +11,10 @@ public interface TokenService {
 
     String generateToken(Authentication authentication);
 
-    Key getSignInKey();
+    SecretKey getSignInKey();
+
+    String extractUserName(String token);
+
+    String extractAuthorities(String token);
 
 }

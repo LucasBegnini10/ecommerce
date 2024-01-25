@@ -2,7 +2,7 @@ package com.server.ecommerce.auth;
 
 import com.server.ecommerce.auth.dto.AuthDTO;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
-import com.server.ecommerce.utils.RestResponseHandler;
+import com.server.ecommerce.infra.RestResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
