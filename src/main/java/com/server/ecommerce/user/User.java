@@ -1,5 +1,6 @@
 package com.server.ecommerce.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.server.ecommerce.infra.BaseEntity;
 import com.server.ecommerce.role.Role;
@@ -48,6 +49,8 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "isEnabled")
     private boolean isEnabled;
 
+
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
@@ -68,16 +71,19 @@ public class User extends BaseEntity implements UserDetails{
         return this.email;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return !this.accountExpired;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return !this.accountLocked;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return !this.credentialsExpired;

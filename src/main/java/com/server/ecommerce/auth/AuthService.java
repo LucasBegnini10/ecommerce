@@ -20,7 +20,8 @@ public class AuthService {
 
     private final UserService userService;
 
-    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     private final TokenService tokenService;
 
@@ -28,12 +29,10 @@ public class AuthService {
     public AuthService(
             PasswordEncoder passwordEncoder,
             UserService userService,
-            AuthenticationManager authenticationManager,
             @Qualifier("tokenServiceImpl") TokenService tokenService
     ){
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
     }
 

@@ -46,7 +46,7 @@ public class TokenServiceImpl implements TokenService{
     public String generateToken(Authentication authentication) {
         Map<String, String> claims = new HashMap<>();
 
-        claims.put("email", authentication.getPrincipal().toString());
+        claims.put("email", authentication.getName());
         claims.put("authorities", populateAuthorities(authentication));
 
         return Jwts.builder()
