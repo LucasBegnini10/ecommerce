@@ -2,13 +2,19 @@ package com.server.ecommerce.user;
 
 import com.server.ecommerce.role.RoleService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
+import com.server.ecommerce.user.dto.UserUpdateDTO;
+import com.server.ecommerce.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,8 +34,16 @@ public class UserService implements UserDetailsService {
         Optional<User> userByEmail = userRepository.findByEmail(username);
 
         if(userByEmail.isEmpty()) throw new UsernameNotFoundException("User not found");
-
         return userByEmail.get();
+    }
+
+
+    public User findUserById(UUID id) throws UserNotFoundException {
+        return userRepository.findByIdAndIsEnabledTrue(id).orElseThrow(UserNotFoundException::new);
+    }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 
     public User buildUserRegister(UserRegisterDTO userRegisterDTO){
@@ -50,5 +64,23 @@ public class UserService implements UserDetailsService {
 
     public User createUser(User user){
         return userRepository.save(user);
+    }
+
+    public User updateUser(UUID id, UserUpdateDTO userUpdateDTO){
+        User user = this.findUserById(id);
+
+        user.setName(userUpdateDTO.name());
+        user.setPhone(userUpdateDTO.phone());
+
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(UUID id){
+        User user = this.findUserById(id);
+
+        user.setEnabled(false);
+
+        userRepository.save(user);
+
     }
 }

@@ -1,9 +1,11 @@
 package com.server.ecommerce.config;
 
 import com.server.ecommerce.filter.TokenValidatorFilter;
+import com.server.ecommerce.role.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,6 +34,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests)-> requests
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenValidatorFilter, UsernamePasswordAuthenticationFilter.class)
