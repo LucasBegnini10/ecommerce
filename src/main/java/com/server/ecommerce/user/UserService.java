@@ -4,9 +4,8 @@ import com.server.ecommerce.role.RoleService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.user.dto.UserUpdateDTO;
 import com.server.ecommerce.user.exceptions.UserNotFoundException;
+import com.server.ecommerce.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,10 +22,13 @@ public class UserService implements UserDetailsService {
 
     private final RoleService roleService;
 
+    private final PasswordUtils passwordUtils;
+
     @Autowired
-    public UserService(UserRepository userRepository, RoleService roleService){
+    public UserService(UserRepository userRepository, RoleService roleService, PasswordUtils passwordUtils){
         this.userRepository = userRepository;
         this.roleService = roleService;
+        this.passwordUtils = passwordUtils;
     }
 
     @Override
@@ -85,6 +87,13 @@ public class UserService implements UserDetailsService {
         user.setEnabled(false);
 
         userRepository.save(user);
+    }
 
+    public void updatePassword(User user, String password){
+        String pwdHash = passwordUtils.hashPwd(password);
+
+        user.setPassword(pwdHash);
+
+        userRepository.save(user);
     }
 }

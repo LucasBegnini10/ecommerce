@@ -1,4 +1,4 @@
-package com.server.ecommerce.user.recoveryPassword;
+package com.server.ecommerce.recoveryPassword;
 
 import com.server.ecommerce.infra.BaseEntity;
 import com.server.ecommerce.user.User;
@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "recovery_password")

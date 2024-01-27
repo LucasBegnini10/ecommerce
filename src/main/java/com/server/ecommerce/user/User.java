@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.server.ecommerce.infra.BaseEntity;
 import com.server.ecommerce.role.Role;
-import com.server.ecommerce.user.recoveryPassword.RecoveryPassword;
+import com.server.ecommerce.recoveryPassword.RecoveryPassword;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

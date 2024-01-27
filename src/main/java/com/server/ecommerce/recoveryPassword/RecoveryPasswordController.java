@@ -1,7 +1,8 @@
-package com.server.ecommerce.user.recoveryPassword;
+package com.server.ecommerce.recoveryPassword;
 
 import com.server.ecommerce.infra.RestResponseHandler;
-import com.server.ecommerce.user.recoveryPassword.dto.RecoveryPasswordDTO;
+import com.server.ecommerce.recoveryPassword.dto.RecoveryPasswordDTO;
+import com.server.ecommerce.recoveryPassword.dto.ResetPasswordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,16 @@ public class RecoveryPasswordController {
         recoveryPasswordService.recovery(recoveryPasswordDTO);
         return RestResponseHandler.generateResponse(
                 "Mail sent!",
+                HttpStatus.OK,
+                null
+        );
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<Object> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+        recoveryPasswordService.resetPassword(resetPasswordDTO);
+        return RestResponseHandler.generateResponse(
+                "Password reset!",
                 HttpStatus.OK,
                 null
         );

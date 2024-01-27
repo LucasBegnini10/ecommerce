@@ -1,16 +1,20 @@
-package com.server.ecommerce.user.recoveryPassword;
+package com.server.ecommerce.recoveryPassword;
 
+import com.server.ecommerce.recoveryPassword.dto.RecoveryPasswordMailDTO;
+import com.server.ecommerce.recoveryPassword.dto.ResetPasswordDTO;
+import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenDisabled;
+import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenExpired;
+import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenUsed;
+import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenNotFound;
 import com.server.ecommerce.user.User;
 import com.server.ecommerce.user.UserService;
-import com.server.ecommerce.user.recoveryPassword.dto.RecoveryPasswordDTO;
-import com.server.ecommerce.user.recoveryPassword.dto.RecoveryPasswordMailDTO;
+import com.server.ecommerce.recoveryPassword.dto.RecoveryPasswordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.embedded.netty.NettyWebServer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,6 +37,50 @@ public class RecoveryPasswordService {
         this.recoveryPasswordMailService = recoveryPasswordMailService;
     }
 
+    public void resetPassword(ResetPasswordDTO  resetPasswordDTO){
+        RecoveryPassword recoveryPassword = findRecoveryActiveByToken(resetPasswordDTO.token());
+
+        recoveryPassword.setUsed(true);
+        recoveryPassword.setUsedIn(LocalDateTime.now());
+        recoveryPassword.setEnabled(false);
+
+        recoveryPasswordRepository.save(recoveryPassword);
+
+        userService.updatePassword(recoveryPassword.getUser(), resetPasswordDTO.password());
+    }
+
+    public RecoveryPassword findRecoveryActiveByToken(String token){
+        Optional<RecoveryPassword> recoveryByToken = recoveryPasswordRepository.findByToken(token);
+
+        if(recoveryByToken.isEmpty()) {
+            throw new RecoveryTokenNotFound();
+        }
+
+        RecoveryPassword recoveryPassword = recoveryByToken.get();
+
+        validateToken(recoveryPassword);
+
+        return recoveryPassword;
+    }
+
+    private void validateToken(RecoveryPassword recoveryPassword){
+        if(recoveryPassword.isUsed()) {
+            throw new RecoveryTokenUsed();
+        }
+
+        if(!recoveryPassword.isEnabled()){
+            throw new RecoveryTokenDisabled();
+        }
+
+        if(tokenIsExpired(recoveryPassword)){
+            throw new RecoveryTokenExpired();
+        }
+    }
+
+    private boolean tokenIsExpired(RecoveryPassword recoveryPassword){
+        return  recoveryPassword.getExpiresIn().isBefore(LocalDateTime.now());
+    }
+
     public void recovery(RecoveryPasswordDTO recoveryPasswordDTO) {
         User user = userService.findUserByEmail(recoveryPasswordDTO.email());
 
@@ -42,9 +90,8 @@ public class RecoveryPasswordService {
         recoveryPasswordRepository.save(recoveryPassword);
 
         try {
-
             RecoveryPasswordMailDTO recoveryPasswordMailDTO =
-                    new RecoveryPasswordMailDTO("lucasbegnini.dev@gmail.com", "Recuperação de Senha", recoveryPassword, user);
+                    new RecoveryPasswordMailDTO(recoveryPasswordDTO.email(), "Recuperação de Senha", recoveryPassword, user);
 
             recoveryPasswordMailService.sendEmail(recoveryPasswordMailDTO);
         } catch (Exception ex){

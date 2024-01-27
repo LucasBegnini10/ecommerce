@@ -1,6 +1,6 @@
-package com.server.ecommerce.user.recoveryPassword;
+package com.server.ecommerce.recoveryPassword;
 
-import com.server.ecommerce.user.recoveryPassword.dto.RecoveryPasswordMailDTO;
+import com.server.ecommerce.recoveryPassword.dto.RecoveryPasswordMailDTO;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -42,6 +42,6 @@ public class RecoveryPasswordMailService {
     }
 
     private String getLinkByRecoveryPassword(RecoveryPassword recoveryPassword){
-        return "https://www.youtube.com/watch?v=6h4abGFXNPY&t=1379s&t=" + recoveryPassword.getToken();
+        return recoveryPassword.getToken();
     }
 }
