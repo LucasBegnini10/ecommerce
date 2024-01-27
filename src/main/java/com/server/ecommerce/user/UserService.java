@@ -1,16 +1,21 @@
 package com.server.ecommerce.user;
 
+import com.server.ecommerce.file.FileService;
 import com.server.ecommerce.role.RoleService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.user.dto.UserUpdateDTO;
 import com.server.ecommerce.user.exceptions.UserNotFoundException;
+import com.server.ecommerce.utils.FileUtils;
 import com.server.ecommerce.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,11 +29,14 @@ public class UserService implements UserDetailsService {
 
     private final PasswordUtils passwordUtils;
 
+    private final FileService fileService;
+
     @Autowired
-    public UserService(UserRepository userRepository, RoleService roleService, PasswordUtils passwordUtils){
+    public UserService(UserRepository userRepository, RoleService roleService, PasswordUtils passwordUtils, FileService fileService){
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordUtils = passwordUtils;
+        this.fileService = fileService;
     }
 
     @Override
@@ -93,6 +101,23 @@ public class UserService implements UserDetailsService {
         String pwdHash = passwordUtils.hashPwd(password);
 
         user.setPassword(pwdHash);
+
+        userRepository.save(user);
+    }
+
+    public void uploadImgPicture(UUID userId, MultipartFile multipartFile) throws IOException {
+        User user = this.findUserById(userId);
+
+        String key = user.getId() + "/picture_img.png";
+        String url =  "https://" + System.getenv("CLOUD_FRONT_DOMAIN") + "/" + key;
+
+        File file = FileUtils.convertMultipartFileToFile(multipartFile);
+
+        fileService.save(key, file);
+
+        file.delete();
+
+        user.setPictureUrl(url);
 
         userRepository.save(user);
     }
