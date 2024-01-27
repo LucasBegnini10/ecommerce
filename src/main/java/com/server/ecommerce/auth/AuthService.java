@@ -5,18 +5,18 @@ import com.server.ecommerce.token.TokenService;
 import com.server.ecommerce.user.User;
 import com.server.ecommerce.user.UserService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
+import com.server.ecommerce.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordUtils passwordUtils;
 
     private final UserService userService;
 
@@ -27,11 +27,11 @@ public class AuthService {
 
     @Autowired
     public AuthService(
-            PasswordEncoder passwordEncoder,
+            PasswordUtils passwordUtils,
             UserService userService,
             @Qualifier("tokenServiceImpl") TokenService tokenService
     ){
-        this.passwordEncoder = passwordEncoder;
+        this.passwordUtils = passwordUtils;
         this.userService = userService;
         this.tokenService = tokenService;
     }
@@ -39,7 +39,7 @@ public class AuthService {
 
     public User register(UserRegisterDTO userRegisterDTO){
         User user = userService.buildUserRegister(userRegisterDTO);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordUtils.hashPwd(user.getPassword()));
 
         return userService.createUser(user);
     }
@@ -50,6 +50,5 @@ public class AuthService {
         );
 
         return tokenService.generateToken(authenticated);
-
     }
 }
