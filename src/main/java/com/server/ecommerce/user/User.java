@@ -35,6 +35,9 @@ public class User extends BaseEntity implements UserDetails{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @Column(name = "picture_url")
+    private String pictureUrl;
+
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Role> roles;
 
@@ -50,6 +53,7 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "isEnabled")
     private boolean isEnabled;
 
+    @JsonIgnore
     @OneToMany(mappedBy="user")
     private Set<RecoveryPassword> tokensRecovery;
 
