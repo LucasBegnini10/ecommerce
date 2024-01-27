@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests)-> requests
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers("api/v1/recovery-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenValidatorFilter, UsernamePasswordAuthenticationFilter.class)

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.server.ecommerce.infra.BaseEntity;
 import com.server.ecommerce.role.Role;
+import com.server.ecommerce.user.recoveryPassword.RecoveryPassword;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,6 +49,9 @@ public class User extends BaseEntity implements UserDetails{
 
     @Column(name = "isEnabled")
     private boolean isEnabled;
+
+    @OneToMany(mappedBy="user")
+    private Set<RecoveryPassword> tokensRecovery;
 
 
     @JsonIgnore
