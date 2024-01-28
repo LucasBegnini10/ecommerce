@@ -2,10 +2,14 @@ package com.server.ecommerce.product.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.server.ecommerce.infra.BaseEntity;
+import com.server.ecommerce.product.utils.PriceUtils;
+import com.server.ecommerce.utils.MoneyUtils;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,5 +40,22 @@ public class Product extends BaseEntity {
     @JsonManagedReference
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ProductInventory productInventory;
+
+    @Transient
+    public Map<String, Object> priceDetail;
+
+    public Map<String, Object> getPriceDetail(){
+        Map<String, Object> priceDetail = new HashMap<String, Object>();
+
+        double priceDouble = PriceUtils.formatLongToDecimal(this.price);
+
+        priceDetail.put("priceInt", this.price);
+        priceDetail.put("priceDouble", priceDouble);
+        priceDetail.put("priceString", MoneyUtils.formatCurrency(priceDouble));
+        priceDetail.put("currency", "BRL");
+        priceDetail.put("currency_symbol", "R$");
+
+        return priceDetail;
+    }
 
 }
