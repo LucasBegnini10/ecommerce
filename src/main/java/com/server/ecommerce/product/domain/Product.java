@@ -24,7 +24,7 @@ public class Product extends BaseEntity {
 
     private String description;
 
-    private int price;
+    private long price;
 
     @Column(name = "is_enabled")
     private boolean isEnabled;

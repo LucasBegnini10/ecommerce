@@ -6,6 +6,7 @@ import com.server.ecommerce.product.repository.ProductRepository;
 import com.server.ecommerce.product.domain.Product;
 import com.server.ecommerce.product.dto.ProductCreateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,8 +41,6 @@ public class ProductService {
 
         product.setProductInventory(productInventory);
 
-        System.out.println();
-
         return product;
     }
 
@@ -49,5 +48,22 @@ public class ProductService {
         Optional<Product> productById = productRepository.findById(id);
 
         return productById.orElseThrow(ProductNotFoundException::new);
+    }
+
+    public Page<Product> findAllActive(
+            int pageNumber,
+            int pageSize,
+            Sort.Direction direction,
+            String sort
+    ){
+        Pageable pageable = null;
+
+        if(direction != null && sort != null){
+            pageable = PageRequest.of(pageNumber, pageSize, direction, sort);
+        } else{
+            pageable = PageRequest.of(pageNumber, pageSize);
+        }
+
+        return productRepository.findByIsEnabledTrue(pageable);
     }
 }
