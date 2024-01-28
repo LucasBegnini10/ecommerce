@@ -1,15 +1,17 @@
 package com.server.ecommerce.product.service;
 
 import com.server.ecommerce.product.domain.ProductInventory;
+import com.server.ecommerce.product.exception.ProductNotFoundException;
 import com.server.ecommerce.product.repository.ProductRepository;
 import com.server.ecommerce.product.domain.Product;
 import com.server.ecommerce.product.dto.ProductCreateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProductService {
-
 
     private final ProductRepository productRepository;
 
@@ -43,4 +45,9 @@ public class ProductService {
         return product;
     }
 
+    public Product getProductById(UUID id){
+        Optional<Product> productById = productRepository.findById(id);
+
+        return productById.orElseThrow(ProductNotFoundException::new);
+    }
 }

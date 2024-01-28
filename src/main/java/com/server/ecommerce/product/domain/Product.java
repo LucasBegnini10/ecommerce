@@ -29,6 +29,7 @@ public class Product extends BaseEntity {
     @Column(name = "is_enabled")
     private boolean isEnabled;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductPicture> pictures;
 
