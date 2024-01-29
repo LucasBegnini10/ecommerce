@@ -47,13 +47,13 @@ public class Product extends BaseEntity {
     public Map<String, Object> getPriceDetail(){
         Map<String, Object> priceDetail = new HashMap<String, Object>();
 
-        double priceDouble = PriceUtils.formatLongToDecimal(this.price);
+        double priceDouble = PriceUtils.formatLongToDouble(this.price);
 
         priceDetail.put("priceInt", this.price);
         priceDetail.put("priceDouble", priceDouble);
         priceDetail.put("priceString", MoneyUtils.formatCurrency(priceDouble));
         priceDetail.put("currency", "BRL");
-        priceDetail.put("currency_symbol", "R$");
+        priceDetail.put("currencySymbol", "R$");
 
         return priceDetail;
     }
