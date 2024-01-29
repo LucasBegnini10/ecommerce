@@ -66,4 +66,14 @@ public class ProductController {
                 productService.findAllActive(pageNumber, pageSize, direction, sort)
         );
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Object> delete(@PathVariable UUID id){
+        productService.deleteProduct(id);
+        return RestResponseHandler.generateResponse(
+                "Product deleted!",
+                HttpStatus.OK,
+                null
+        );
+    }
 }

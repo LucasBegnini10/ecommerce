@@ -92,4 +92,10 @@ public class ProductService {
 
         return product;
     }
+
+    public void deleteProduct(UUID id){
+        Product product = getProductById(id);
+
+        productRepository.delete(product);
+    }
 }
