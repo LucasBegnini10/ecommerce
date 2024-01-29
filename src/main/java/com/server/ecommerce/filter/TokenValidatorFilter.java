@@ -1,6 +1,7 @@
 package com.server.ecommerce.filter;
 
 import com.server.ecommerce.token.TokenService;
+import com.server.ecommerce.token.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,22 +34,26 @@ public class TokenValidatorFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = recoverToken(request);
+        try {
+            String token = recoverToken(request);
 
-        tokenService.validateToken(token);
+            tokenService.validateToken(token);
 
-        String username = tokenService.extractUserName(token);
-        String authorities = tokenService.extractAuthorities(token);
+            String username = tokenService.extractUserName(token);
+            String authorities = tokenService.extractAuthorities(token);
 
-        Authentication auth = buildAuthentication(
-                username,
-                null,
-                AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
+            Authentication auth = buildAuthentication(
+                    username,
+                    null,
+                    AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
 
-        setAuthentication(auth);
+            setAuthentication(auth);
+
+        } catch (InvalidTokenException ex){
+            System.out.println("Invalid token ==> " + ex.getMessage());
+        }
 
         filterChain.doFilter(request, response);
-
     }
 
 

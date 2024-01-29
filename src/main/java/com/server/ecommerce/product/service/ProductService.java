@@ -4,7 +4,8 @@ import com.server.ecommerce.product.domain.ProductInventory;
 import com.server.ecommerce.product.exception.ProductNotFoundException;
 import com.server.ecommerce.product.repository.ProductRepository;
 import com.server.ecommerce.product.domain.Product;
-import com.server.ecommerce.product.dto.ProductCreateDTO;
+import com.server.ecommerce.product.dto.ProductDTO;
+import com.server.ecommerce.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -19,29 +20,6 @@ public class ProductService {
     @Autowired
     public ProductService(ProductRepository productRepository){
         this.productRepository = productRepository;
-    }
-
-
-    public Product create(ProductCreateDTO productCreateDTO){
-        return productRepository.save(buildProduct(productCreateDTO));
-    }
-
-    private Product buildProduct(ProductCreateDTO productCreateDTO){
-        Product product = new Product();
-
-        product.setName(productCreateDTO.name());
-        product.setDescription(productCreateDTO.description());
-        product.setPrice(productCreateDTO.price());
-        product.setEnabled(productCreateDTO.isEnabled());
-
-        ProductInventory productInventory = new ProductInventory();
-
-        productInventory.setProduct(product);
-        productInventory.setAmount(productCreateDTO.quantity());
-
-        product.setProductInventory(productInventory);
-
-        return product;
     }
 
     public Product getProductById(UUID id){
@@ -65,5 +43,53 @@ public class ProductService {
         }
 
         return productRepository.findByIsEnabledTrue(pageable);
+    }
+
+    public Product create(ProductDTO productDTO){
+        return productRepository.save(buildProduct(new Product(), productDTO));
+    }
+
+    public Product update(UUID id, ProductDTO productDTO){
+        Product product = getProductById(id);
+
+        buildProduct(product, productDTO);
+
+        return productRepository.save(product);
+    }
+
+    private Product buildProduct(Product product, ProductDTO productDTO){
+        if(StringUtils.isNotNullAndNotBlank(productDTO.name())){
+            product.setName(productDTO.name());
+        }
+
+        if(StringUtils.isNotNullAndNotBlank(productDTO.description())){
+            product.setDescription(productDTO.description());
+        }
+
+        if(productDTO.price() != null){
+            product.setPrice(productDTO.price());
+        }
+
+        if(productDTO.isEnabled() != null){
+            product.setEnabled(productDTO.isEnabled());
+        }
+
+        ProductInventory productInventory = null;
+
+        if(product.getProductInventory() != null){
+            productInventory = product.getProductInventory();
+        } else {
+            productInventory = new ProductInventory();
+        }
+
+        productInventory.setProduct(product);
+
+        if(productDTO.quantity() != null){
+            productInventory.setAmount(productDTO.quantity());
+        }
+
+        product.setProductInventory(productInventory);
+
+        return product;
     }
 }

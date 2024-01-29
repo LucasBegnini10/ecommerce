@@ -1,7 +1,7 @@
 package com.server.ecommerce.product.controller;
 
 import com.server.ecommerce.infra.RestResponseHandler;
-import com.server.ecommerce.product.dto.ProductCreateDTO;
+import com.server.ecommerce.product.dto.ProductDTO;
 import com.server.ecommerce.product.service.ProductService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,23 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody ProductCreateDTO productCreateDTO){
+    public ResponseEntity<Object> create(@RequestBody ProductDTO productDTO){
         return RestResponseHandler.generateResponse(
                 "Product Created",
                 HttpStatus.CREATED,
-                productService.create(productCreateDTO)
+                productService.create(productDTO)
+        );
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Object> update(
+            @PathVariable UUID id,
+            @RequestBody ProductDTO productDTO
+    ){
+        return RestResponseHandler.generateResponse(
+                "Product Updated!",
+                HttpStatus.OK,
+                productService.update(id, productDTO)
         );
     }
 
