@@ -35,6 +35,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests)-> requests
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers("api/v1/recovery-password/**").permitAll()
                         .anyRequest().authenticated()
                 )

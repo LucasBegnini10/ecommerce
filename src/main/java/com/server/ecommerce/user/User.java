@@ -57,8 +57,6 @@ public class User extends BaseEntity implements UserDetails{
     @OneToMany(mappedBy="user")
     private Set<RecoveryPassword> tokensRecovery;
 
-
-    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();

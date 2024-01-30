@@ -1,6 +1,8 @@
 package com.server.ecommerce.user.exceptions;
 
-public class UserNotFoundException extends RuntimeException{
+import com.server.ecommerce.exception.NotFoundException;
+
+public class UserNotFoundException extends NotFoundException {
     public UserNotFoundException(){
         super("User not found");
     }

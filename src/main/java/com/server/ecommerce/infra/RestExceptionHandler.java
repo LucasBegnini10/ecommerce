@@ -1,10 +1,10 @@
 package com.server.ecommerce.infra;
 
+import com.server.ecommerce.exception.BadRequestException;
+import com.server.ecommerce.exception.NotFoundException;
 import com.server.ecommerce.recoveryPassword.exception.RecoveryPasswordException;
-import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenDisabled;
 import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenNotFound;
 import com.server.ecommerce.token.exception.InvalidTokenException;
-import com.server.ecommerce.user.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -26,9 +26,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return RestResponseHandler.generateResponse("Invalid token!", HttpStatus.UNAUTHORIZED, null);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    private ResponseEntity<Object> invalidTokenException(UserNotFoundException ex){
-        return RestResponseHandler.generateResponse("User not found!", HttpStatus.NOT_FOUND, null);
+    @ExceptionHandler(NotFoundException.class)
+    private ResponseEntity<Object> notFoundException(NotFoundException ex){
+        return RestResponseHandler.generateResponse(ex.getMessage(), HttpStatus.NOT_FOUND, null);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    private ResponseEntity<Object> badRequestException(BadRequestException ex){
+        return RestResponseHandler.generateResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, null);
     }
 
     @ExceptionHandler(RecoveryPasswordException.class)
