@@ -6,22 +6,25 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 
 @Configuration
+@EnableRedisRepositories
 public class CacheConfig {
 
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config =  new RedisStandaloneConfiguration("localhost", 6379);
-        config.setPassword(System.getenv("PASSWORD_REDIS"));
-
-        return new LettuceConnectionFactory(config);
+    public RedisConnectionFactory lettuceConnectionFactory() {
+        return new LettuceConnectionFactory(
+                new RedisStandaloneConfiguration()
+        );
     }
 
     @Bean
-    RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
+        template.setValueSerializer(new GenericToStringSerializer<Object>(Object.class));
         return template;
     }
 }

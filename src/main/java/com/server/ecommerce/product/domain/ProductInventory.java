@@ -22,4 +22,5 @@ public class ProductInventory {
 
     private long amount;
 
+    private long hold;
 }

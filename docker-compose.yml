@@ -17,7 +17,7 @@ services:
       - my-db:/var/lib/mysql
   redis:
     image: redis
-    command: redis-server --requirepass Ecommerce@2024
+    command: redis-server
     ports:
       - "6379:6379"
 volumes:

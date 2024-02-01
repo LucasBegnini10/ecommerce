@@ -2,8 +2,7 @@ package com.server.ecommerce.product.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.server.ecommerce.infra.BaseEntity;
-import com.server.ecommerce.product.utils.PriceUtils;
-import com.server.ecommerce.utils.MoneyUtils;
+import com.server.ecommerce.utils.PriceUtils;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,17 +44,7 @@ public class Product extends BaseEntity {
     public Map<String, Object> priceDetail;
 
     public Map<String, Object> getPriceDetail(){
-        Map<String, Object> priceDetail = new HashMap<String, Object>();
-
-        double priceDouble = PriceUtils.formatLongToDouble(this.price);
-
-        priceDetail.put("priceInt", this.price);
-        priceDetail.put("priceDouble", priceDouble);
-        priceDetail.put("priceString", MoneyUtils.formatCurrency(priceDouble));
-        priceDetail.put("currency", "BRL");
-        priceDetail.put("currencySymbol", "R$");
-
-        return priceDetail;
+        return PriceUtils.buildPriceDetails(this.price);
     }
 
 }
