@@ -113,7 +113,7 @@ public class RecoveryPasswordService {
     }
 
     private String generateToken(UUID userId){
-        return userId + "#" + UUID.randomUUID();
+        return userId + "$" + UUID.randomUUID();
     }
 
     private LocalDateTime getExpiresIn(){

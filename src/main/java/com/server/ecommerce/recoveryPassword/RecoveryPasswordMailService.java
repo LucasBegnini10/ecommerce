@@ -42,6 +42,6 @@ public class RecoveryPasswordMailService {
     }
 
     private String getLinkByRecoveryPassword(RecoveryPassword recoveryPassword){
-        return recoveryPassword.getToken();
+        return String.format("http://localhost:3000/reset-password?token=%s", recoveryPassword.getToken());
     }
 }
