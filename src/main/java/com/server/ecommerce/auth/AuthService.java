@@ -51,4 +51,9 @@ public class AuthService {
 
         return tokenService.generateToken(authenticated);
     }
+
+    public User loadUserByToken(String token){
+        String email = tokenService.extractUserName(token);
+        return userService.findUserByEmail(email);
+    }
 }

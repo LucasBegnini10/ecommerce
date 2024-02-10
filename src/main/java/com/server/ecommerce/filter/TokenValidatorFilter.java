@@ -4,6 +4,7 @@ import com.server.ecommerce.token.TokenService;
 import com.server.ecommerce.token.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,22 @@ public class TokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = recoverToken(request);
+            Cookie[] cookies = request.getCookies();
+            String token = null;
+
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("token".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+
+            if(token == null){
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             tokenService.validateToken(token);
 
@@ -57,16 +73,6 @@ public class TokenValidatorFilter extends OncePerRequestFilter {
     }
 
 
-    private Boolean hasToken(HttpServletRequest request){
-        final String authHeader = request.getHeader("Authorization");
-        return authHeader != null && authHeader.startsWith("Bearer ");
-    }
-
-    private String recoverToken(HttpServletRequest request){
-        String authHeader = request.getHeader("Authorization");
-        return authHeader.substring(7);
-    }
-
     private Authentication buildAuthentication(
             Object principal,
             Object credentials,
@@ -81,10 +87,5 @@ public class TokenValidatorFilter extends OncePerRequestFilter {
 
     private void setAuthentication(Authentication auth){
         SecurityContextHolder.getContext().setAuthentication(auth);
-    }
-
-    @Override
-    public boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().contains("/api/v1/auth") || !hasToken(request);
     }
 }

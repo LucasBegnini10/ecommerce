@@ -7,6 +7,7 @@ import com.server.ecommerce.recoveryPassword.exception.RecoveryTokenNotFound;
 import com.server.ecommerce.token.exception.InvalidTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -19,6 +20,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(SQLException.class)
     private ResponseEntity<Object> sqlException(SQLException exception){
         return RestResponseHandler.generateResponse("Error", HttpStatus.BAD_REQUEST, exception.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    private ResponseEntity<Object> authenticationException(AuthenticationException exception){
+        return RestResponseHandler.generateResponse("Bad Credentials", HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(InvalidTokenException.class)

@@ -1,4 +1,4 @@
-package com.server.ecommerce.aws.s3;
+package com.server.ecommerce.config.aws.s3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

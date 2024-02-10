@@ -1,6 +1,6 @@
 package com.server.ecommerce.file;
 
-import com.server.ecommerce.aws.s3.S3Service;
+import com.server.ecommerce.config.aws.s3.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

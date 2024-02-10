@@ -72,7 +72,7 @@ public class TokenServiceImpl implements TokenService{
 
     public String extractUserName(String token){
         Claims claims = extractAllClaims(token).getPayload();
-        return String.valueOf(claims.get("username"));
+        return String.valueOf(claims.get("email"));
     }
 
     public String extractAuthorities(String token){

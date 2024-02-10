@@ -3,13 +3,12 @@ package com.server.ecommerce.auth;
 import com.server.ecommerce.auth.dto.AuthDTO;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.infra.RestResponseHandler;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -31,11 +30,26 @@ public class AuthController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> auth(@RequestBody AuthDTO authDTO){
+    public ResponseEntity<Object> auth(@RequestBody AuthDTO authDTO, HttpServletResponse response){
+        String token = authService.auth(authDTO);
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(60 * 60);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return RestResponseHandler.generateResponse(
                 "Authenticated",
                 HttpStatus.OK,
-                authService.auth(authDTO)
+                token
             );
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Object> getUserByEmail(@CookieValue("token") String token) {
+        return RestResponseHandler.generateResponse(
+                "User found!",
+                HttpStatus.OK,
+                authService.loadUserByToken(token)
+        );
     }
 }
