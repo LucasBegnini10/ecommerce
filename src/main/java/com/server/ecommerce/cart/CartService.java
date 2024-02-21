@@ -14,9 +14,10 @@ import com.server.ecommerce.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 
 @Service
@@ -43,27 +44,31 @@ public class CartService {
         User user = userService.findUserById(cartAddProductDTO.userId());
         Product product = productService.getProductById(cartAddProductDTO.productId());
 
-        createProductInCart(user, product);
-
         if(!productService.hasProductInInventory(product))
             throw new ProductInventoryExceededException();
+
+        setProductInCart(user, product);
     }
 
-    private void createProductInCart(User user, Product product){
+    private void setProductInCart(User user, Product product){
         try {
             Cart cart = getCart(user);
-            createProductInCart(cart, product, 1);
+            setProductInCart(cart, product, 1);
 
         } catch (CartNotFoundException ex) {
             createNewCart(user, product);
         }
     }
 
-    private void createProductInCart(Cart cart, Product product, long quantity){
+    private void setProductInCart(Cart cart, Product product, long quantity){
         if(cartHasProduct(cart, product)) {
             updateQuantityProduct(cart, product, quantity);
-        };
+        } else{
+            setNewProductInCart(cart, product, quantity);
+        }
+    }
 
+    private void setNewProductInCart(Cart cart, Product product, long quantity){
         Set<CartItem> items = cart.getItems();
         items.add(new CartItem(product, quantity));
 
@@ -92,7 +97,22 @@ public class CartService {
     }
 
     public void createNewCart(User user, Product product){
-        saveCart(new Cart(user, product));
+        Cart cart = new Cart();
+
+        LocalDateTime now = LocalDateTime.now();
+        cart.setUserId(user.getId().toString());
+
+        Set<CartItem> items = new HashSet<>();
+        CartItem item = new CartItem(product);
+
+        items.add(item);
+
+        cart.setCreatedAt(now);
+        cart.setItems(items);
+        cart.setViewedAt(now);
+        cart.setUpdatedAt(now);
+
+        saveCart(cart);
     }
 
     public void updateQuantityProduct(CartUpdateQuantityDTO cartUpdateQuantityDTO){
@@ -115,7 +135,7 @@ public class CartService {
 
             saveCart(cart);
         } catch (ProductNotFoundInCartException ex){
-            createProductInCart(cart, product, quantity);
+            setProductInCart(cart, product, quantity);
         }
     }
 
@@ -143,4 +163,5 @@ public class CartService {
         User user = userService.findUserById(userId);
         cartRepository.delete(getCart(user));
     }
+
 }

@@ -17,16 +17,8 @@ import java.util.*;
 @Setter
 public class Cart implements Serializable {
 
-    public Cart(User user, Product product){
-        LocalDateTime now = LocalDateTime.now();
-        this.userId = user.getId().toString();
+    public Cart(){
 
-        this.items = new HashSet<>();
-        items.add(new CartItem(product));
-
-        this.viewedAt = now;
-        this.createdAt = now;
-        this.updatedAt = now;
     }
 
     @Id
@@ -43,7 +35,7 @@ public class Cart implements Serializable {
 
     public long getTotal() {
         return this.items.stream()
-                .mapToLong(item -> item.getProduct().getPrice())
+                .mapToLong(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
     }
 

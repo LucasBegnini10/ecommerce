@@ -14,6 +14,7 @@ import java.util.UUID;
 @Setter
 public class CartItem {
 
+    public CartItem(){}
 
     public CartItem(Product product){
         this(product, 1);
