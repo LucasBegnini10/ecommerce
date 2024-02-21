@@ -4,6 +4,6 @@ import com.server.ecommerce.exception.NotFoundException;
 
 public class CartNotFoundException extends NotFoundException {
     public CartNotFoundException(){
-        super("Cart not found");
+        super("Cart not found!");
     }
 }

@@ -4,6 +4,8 @@ import com.server.ecommerce.file.FileService;
 import com.server.ecommerce.role.RoleService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.user.dto.UserUpdateDTO;
+import com.server.ecommerce.user.dto.UserUpdatePasswordDTO;
+import com.server.ecommerce.user.exceptions.InvalidPasswordException;
 import com.server.ecommerce.user.exceptions.UserNotFoundException;
 import com.server.ecommerce.utils.FileUtils;
 import com.server.ecommerce.utils.PasswordUtils;
@@ -120,5 +122,15 @@ public class UserService implements UserDetailsService {
         user.setPictureUrl(url);
 
         userRepository.save(user);
+    }
+
+    public void updatePassword(UUID userId, UserUpdatePasswordDTO userUpdatePasswordDTO){
+        User user = findUserById(userId);
+
+        if(!passwordUtils.comparePwd(userUpdatePasswordDTO.currentPassword(), user.getPassword())){
+            throw new InvalidPasswordException();
+        }
+
+        updatePassword(user, userUpdatePasswordDTO.newPassword());
     }
 }

@@ -17,9 +17,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    private final ProductPriceTrackerService productPriceTrackerService;
+
     @Autowired
-    public ProductService(ProductRepository productRepository){
+    public ProductService(ProductRepository productRepository, ProductPriceTrackerService productPriceTrackerService){
         this.productRepository = productRepository;
+        this.productPriceTrackerService = productPriceTrackerService;
     }
 
     public Product getProductById(UUID id){
@@ -52,9 +55,16 @@ public class ProductService {
     public Product update(UUID id, ProductDTO productDTO){
         Product product = getProductById(id);
 
-        buildProduct(product, productDTO);
+        setProductPriceTracker(product, productDTO);
 
+        buildProduct(product, productDTO);
         return productRepository.save(product);
+    }
+
+    private void setProductPriceTracker(Product product, ProductDTO productDTO){
+        if(productDTO.price() != null && product.getPrice() == productDTO.price()){
+            productPriceTrackerService.set(product, productDTO.price());
+        }
     }
 
     private Product buildProduct(Product product, ProductDTO productDTO){
@@ -97,5 +107,14 @@ public class ProductService {
         Product product = getProductById(id);
 
         productRepository.delete(product);
+    }
+
+    public boolean hasProductInInventory(Product product){
+        return hasProductInInventory(product, 1);
+    }
+
+    public boolean hasProductInInventory(Product product, long quantity){
+        ProductInventory productInventory = product.getProductInventory();
+        return productInventory.getAmount() >= quantity;
     }
 }

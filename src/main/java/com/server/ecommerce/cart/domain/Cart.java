@@ -1,5 +1,6 @@
 package com.server.ecommerce.cart.domain;
 
+import com.server.ecommerce.product.domain.Product;
 import com.server.ecommerce.user.User;
 import com.server.ecommerce.utils.PriceUtils;
 import lombok.Getter;
@@ -16,10 +17,20 @@ import java.util.*;
 @Setter
 public class Cart implements Serializable {
 
+    public Cart(User user, Product product){
+        LocalDateTime now = LocalDateTime.now();
+        this.userId = user.getId().toString();
+
+        this.items = new HashSet<>();
+        items.add(new CartItem(product));
+
+        this.viewedAt = now;
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
     @Id
     private String userId;
-
-    private User user;
 
     private Set<CartItem> items;
 

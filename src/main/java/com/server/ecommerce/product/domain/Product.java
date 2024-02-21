@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -43,8 +43,15 @@ public class Product extends BaseEntity {
     @Transient
     public Map<String, Object> priceDetail;
 
+    @Transient
+    public boolean isNew;
+
     public Map<String, Object> getPriceDetail(){
         return PriceUtils.buildPriceDetails(this.price);
+    }
+
+    public boolean getIsNew(){
+        return this.getCreatedAt().isAfter(LocalDateTime.now().minusDays(1));
     }
 
 }

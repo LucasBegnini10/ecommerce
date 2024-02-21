@@ -2,13 +2,13 @@ package com.server.ecommerce.user;
 
 import com.server.ecommerce.infra.RestResponseHandler;
 import com.server.ecommerce.user.dto.UserUpdateDTO;
+import com.server.ecommerce.user.dto.UserUpdatePasswordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -78,5 +78,17 @@ public class UserController {
                     ex.getMessage()
             );
         }
+    }
+
+    @PatchMapping("{userId}/password")
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID userId, @RequestBody UserUpdatePasswordDTO userUpdatePasswordDTO){
+        userService.updatePassword(userId, userUpdatePasswordDTO);
+
+
+        return RestResponseHandler.generateResponse(
+                "Password updated!",
+                HttpStatus.OK,
+                null
+        );
     }
 }

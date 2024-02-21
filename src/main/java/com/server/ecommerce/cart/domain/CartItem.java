@@ -8,10 +8,26 @@ import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class CartItem {
+
+
+    public CartItem(Product product){
+        this(product, 1);
+    }
+
+    public CartItem(Product product, long quantity){
+        this.id = UUID.randomUUID().toString();
+        this.product = product;
+        this.product.setPictures(null);
+        this.product.setProductInventory(null);
+        this.quantity = quantity;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
     private String id;
 
