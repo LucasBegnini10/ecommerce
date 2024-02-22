@@ -7,6 +7,7 @@ import com.server.ecommerce.cart.dto.CartUpdateQuantityDTO;
 import com.server.ecommerce.cart.exception.CartNotFoundException;
 import com.server.ecommerce.cart.exception.ProductInventoryExceededException;
 import com.server.ecommerce.cart.exception.ProductNotFoundInCartException;
+import com.server.ecommerce.cart.exception.ProductQuantityInvalidException;
 import com.server.ecommerce.product.domain.Product;
 import com.server.ecommerce.product.service.ProductService;
 import com.server.ecommerce.user.User;
@@ -44,40 +45,19 @@ public class CartService {
         User user = userService.findUserById(cartAddProductDTO.userId());
         Product product = productService.getProductById(cartAddProductDTO.productId());
 
-        if(!productService.hasProductInInventory(product))
-            throw new ProductInventoryExceededException();
+        Cart cart = getOrCreateCartByUser(user);
 
-        setProductInCart(user, product);
-    }
-
-    private void setProductInCart(User user, Product product){
-        try {
-            Cart cart = getCart(user);
-            setProductInCart(cart, product, 1);
-
-        } catch (CartNotFoundException ex) {
-            createNewCart(user, product);
-        }
-    }
-
-    private void setProductInCart(Cart cart, Product product, long quantity){
-        if(cartHasProduct(cart, product)) {
-            updateQuantityProduct(cart, product, quantity);
-        } else{
-            setNewProductInCart(cart, product, quantity);
-        }
-    }
-
-    private void setNewProductInCart(Cart cart, Product product, long quantity){
-        Set<CartItem> items = cart.getItems();
-        items.add(new CartItem(product, quantity));
+        setProductToCart(cart, product);
 
         saveCart(cart);
     }
 
-    public Cart getCart(UUID userId){
-        User user = userService.findUserById(userId);
-        return getCart(user);
+    private Cart getOrCreateCartByUser(User user){
+        try {
+            return getCart(user);
+        } catch (CartNotFoundException ex){
+            return createNewCart(user);
+        }
     }
 
     public Cart getCart(User user){
@@ -86,9 +66,26 @@ public class CartService {
                 .orElseThrow(CartNotFoundException::new);
     }
 
+    public Cart createNewCart(User user){
+        Cart cart = new Cart();
 
-    public void saveCart(Cart cart){
-        cartRepository.save(cart);
+        LocalDateTime now = LocalDateTime.now();
+        cart.setUserId(user.getId().toString());
+
+        Set<CartItem> items = new HashSet<>();
+
+        cart.setItems(items);
+        cart.setCreatedAt(now);
+
+        return cart;
+    }
+
+    private void setProductToCart(Cart cart, Product product){
+        if(cartHasProduct(cart, product)) {
+            updateQuantityProduct(cart, product, 1);
+        } else{
+            addNewProductToCart(cart, product);
+        }
     }
 
     private boolean cartHasProduct(Cart cart, Product product){
@@ -96,46 +93,24 @@ public class CartService {
                 .anyMatch(item -> item.getProduct().getId().equals(product.getId()));
     }
 
-    public void createNewCart(User user, Product product){
-        Cart cart = new Cart();
+    private void updateQuantityProduct(Cart cart, Product product, long quantity){
+        validateInventoryOfProduct(product, quantity);
 
-        LocalDateTime now = LocalDateTime.now();
-        cart.setUserId(user.getId().toString());
-
-        Set<CartItem> items = new HashSet<>();
-        CartItem item = new CartItem(product);
-
-        items.add(item);
-
-        cart.setCreatedAt(now);
-        cart.setItems(items);
-        cart.setViewedAt(now);
-        cart.setUpdatedAt(now);
-
-        saveCart(cart);
-    }
-
-    public void updateQuantityProduct(CartUpdateQuantityDTO cartUpdateQuantityDTO){
-        User user = userService.findUserById(cartUpdateQuantityDTO.userId());
-        Product product = productService.getProductById(cartUpdateQuantityDTO.productId());
-
-        if(!productService.hasProductInInventory(product, cartUpdateQuantityDTO.quantity())){
-            throw new ProductInventoryExceededException();
-        }
-
-        Cart cart = getCart(user);
-
-        updateQuantityProduct(cart, product, cartUpdateQuantityDTO.quantity());
-    }
-
-    public void updateQuantityProduct(Cart cart, Product product, long quantity){
         try {
             CartItem item = getCartItemByProduct(cart, product);
             item.setQuantity(quantity);
-
-            saveCart(cart);
         } catch (ProductNotFoundInCartException ex){
-            setProductInCart(cart, product, quantity);
+            addNewProductToCart(cart, product);
+        }
+    }
+
+    private void validateInventoryOfProduct(Product product, long quantity){
+        if(quantity <= 0){
+            throw new ProductQuantityInvalidException();
+        }
+
+        if(!productService.hasProductInInventory(product, quantity)){
+            throw new ProductInventoryExceededException();
         }
     }
 
@@ -146,22 +121,65 @@ public class CartService {
                 .orElseThrow(ProductNotFoundInCartException::new);
     }
 
+    private void addNewProductToCart(Cart cart, Product product){
+        Set<CartItem> items = cart.getItems();
+        items.add(new CartItem(product));
+    }
+
+    public Cart getCartByUserId(UUID userId){
+        User user = userService.findUserById(userId);
+        return getCart(user);
+    }
+
+    public void saveCart(Cart cart){
+        cart.setUpdatedAt(LocalDateTime.now());
+        cart.setViewedAt(LocalDateTime.now());
+        cartRepository.save(cart);
+    }
+
+    public void updateQuantityProduct(CartUpdateQuantityDTO cartUpdateQuantityDTO){
+        User user = userService.findUserById(cartUpdateQuantityDTO.userId());
+        Product product = productService.getProductById(cartUpdateQuantityDTO.productId());
+
+        Cart cart = getOrCreateCartByUser(user);
+
+        updateQuantityProduct(cart, product, cartUpdateQuantityDTO.quantity());
+
+        saveCart(cart);
+    }
+
     public void deleteProductCart(UUID userId, UUID productId){
         User user = userService.findUserById(userId);
         Product product = productService.getProductById(productId);
 
         Cart cart = getCart(user);
 
-        Set<CartItem> items = cart.getItems();
+        removeProductToCart(cart, product);
 
-        items.remove(getCartItemByProduct(cart, product));
+        if(cartIsEmpty(cart)){
+            clearCart(cart);
+            return;
+        }
 
         saveCart(cart);
     }
 
+    private void removeProductToCart(Cart cart, Product product){
+        Set<CartItem> items = cart.getItems();
+        items.remove(getCartItemByProduct(cart, product));
+    }
+
+    private boolean cartIsEmpty(Cart cart){
+        return cart.getItems().isEmpty();
+    }
+
     public void clearCart(UUID userId){
         User user = userService.findUserById(userId);
-        cartRepository.delete(getCart(user));
+        clearCart(getCart(user));
+    }
+
+    private void clearCart(Cart cart){
+        cartRepository.delete(cart);
     }
 
 }

@@ -26,7 +26,7 @@ public class CartController {
         return RestResponseHandler.generateResponse(
                 "Cart by userId " + userId,
                 HttpStatus.OK,
-                cartService.getCart(userId)
+                cartService.getCartByUserId(userId)
         );
     }
 

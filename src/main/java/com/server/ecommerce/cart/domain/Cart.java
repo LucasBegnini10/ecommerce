@@ -42,4 +42,8 @@ public class Cart implements Serializable {
     public Map<String, Object> getTotalDetails(){
         return PriceUtils.buildPriceDetails(this.getTotal());
     }
+
+    public int getCartLength(){
+        return this.items.size();
+    }
 }
