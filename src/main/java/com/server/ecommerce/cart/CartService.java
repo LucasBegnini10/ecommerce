@@ -25,6 +25,7 @@ import java.util.UUID;
 public class CartService {
 
     private static final long TIME_EXPIRATION_CART = 60L * 60L * 24L * 7L; //7 days
+    private static final int MIN_QUANTITY_TO_ADD_IN_CART = 1;
 
     private final CartRepository cartRepository;
 
@@ -32,7 +33,6 @@ public class CartService {
 
     private final ProductService productService;
 
-    @Autowired
     public CartService(
             CartRepository cartRepository,
             UserService userService,
@@ -81,7 +81,7 @@ public class CartService {
 
     private void setProductToCart(Cart cart, Product product){
         if(cartHasProduct(cart, product)) {
-            updateQuantityProduct(cart, product, 1);
+            updateProductQuantityInCart(cart, product, MIN_QUANTITY_TO_ADD_IN_CART);
         } else{
             addNewProductToCart(cart, product);
         }
@@ -92,7 +92,7 @@ public class CartService {
                 .anyMatch(item -> item.getProduct().getId().equals(product.getId()));
     }
 
-    private void updateQuantityProduct(Cart cart, Product product, long quantity){
+    private void updateProductQuantityInCart(Cart cart, Product product, long quantity){
         validateInventoryOfProduct(product, quantity);
 
         try {
@@ -151,7 +151,7 @@ public class CartService {
 
         Cart cart = getOrCreateCartByUser(user);
 
-        updateQuantityProduct(cart, product, cartUpdateQuantityDTO.quantity());
+        updateProductQuantityInCart(cart, product, cartUpdateQuantityDTO.quantity());
 
         saveCart(cart);
     }
