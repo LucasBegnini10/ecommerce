@@ -1,6 +1,7 @@
 package com.server.ecommerce.cart;
 
 import com.server.ecommerce.cart.domain.Cart;
+import com.server.ecommerce.cart.domain.CartEventType;
 import com.server.ecommerce.cart.domain.CartItem;
 import com.server.ecommerce.cart.dto.CartAddProductDTO;
 import com.server.ecommerce.cart.dto.CartUpdateQuantityDTO;
@@ -15,7 +16,6 @@ import com.server.ecommerce.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -23,6 +23,8 @@ import java.util.UUID;
 
 @Service
 public class CartService {
+
+    private static final long TIME_EXPIRATION_CART = 60L * 60L * 24L * 7L; //7 days
 
     private final CartRepository cartRepository;
 
@@ -69,13 +71,10 @@ public class CartService {
     public Cart createNewCart(User user){
         Cart cart = new Cart();
 
-        LocalDateTime now = LocalDateTime.now();
         cart.setUserId(user.getId().toString());
 
-        Set<CartItem> items = new HashSet<>();
-
-        cart.setItems(items);
-        cart.setCreatedAt(now);
+        cart.setItems(new HashSet<>());
+        setDateTimeMetricsByEvent(cart, CartEventType.CREATE_CART);
 
         return cart;
     }
@@ -99,6 +98,7 @@ public class CartService {
         try {
             CartItem item = getCartItemByProduct(cart, product);
             item.setQuantity(quantity);
+            setDateTimeMetricsByEvent(cart, CartEventType.UPDATE_PRODUCT);
         } catch (ProductNotFoundInCartException ex){
             addNewProductToCart(cart, product);
         }
@@ -124,17 +124,25 @@ public class CartService {
     private void addNewProductToCart(Cart cart, Product product){
         Set<CartItem> items = cart.getItems();
         items.add(new CartItem(product));
+        setDateTimeMetricsByEvent(cart, CartEventType.ADD_PRODUCT);
     }
 
     public Cart getCartByUserId(UUID userId){
         User user = userService.findUserById(userId);
-        return getCart(user);
+        Cart cart = getCart(user);
+
+        setDateTimeMetricsByEvent(cart, CartEventType.GET_CART);
+        saveCart(cart);
+
+        return cart;
     }
 
     public void saveCart(Cart cart){
-        cart.setUpdatedAt(LocalDateTime.now());
-        cart.setViewedAt(LocalDateTime.now());
-        cartRepository.save(cart);
+        if(cartIsEmpty(cart)){
+            clearCart(cart);
+        }else {
+            cartRepository.save(cart);
+        }
     }
 
     public void updateQuantityProduct(CartUpdateQuantityDTO cartUpdateQuantityDTO){
@@ -156,17 +164,13 @@ public class CartService {
 
         removeProductToCart(cart, product);
 
-        if(cartIsEmpty(cart)){
-            clearCart(cart);
-            return;
-        }
-
         saveCart(cart);
     }
 
     private void removeProductToCart(Cart cart, Product product){
         Set<CartItem> items = cart.getItems();
         items.remove(getCartItemByProduct(cart, product));
+        setDateTimeMetricsByEvent(cart, CartEventType.DELETE_PRODUCT);
     }
 
     private boolean cartIsEmpty(Cart cart){
@@ -182,4 +186,32 @@ public class CartService {
         cartRepository.delete(cart);
     }
 
+    private void setDateTimeMetricsByEvent(Cart cart, CartEventType event){
+        switch (event){
+            case ADD_PRODUCT -> {
+                cart.setViewedAt();
+                cart.setUpdatedAt();
+                resetExpirationCart(cart);
+            }
+            case GET_CART -> {
+                cart.setViewedAt();
+                resetExpirationCart(cart);
+            }
+            case CREATE_CART -> {
+                cart.setCreatedAt();
+                cart.setUpdatedAt();
+                cart.setUpdatedAt();
+                resetExpirationCart(cart);
+            }
+            case DELETE_PRODUCT, UPDATE_PRODUCT -> {
+                cart.setUpdatedAt();
+                cart.setViewedAt();
+                resetExpirationCart(cart);
+            }
+        }
+    }
+
+    private void resetExpirationCart(Cart cart){
+        cart.setExpiration(TIME_EXPIRATION_CART);
+    }
 }

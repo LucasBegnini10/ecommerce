@@ -1,12 +1,11 @@
 package com.server.ecommerce.cart.domain;
 
-import com.server.ecommerce.product.domain.Product;
-import com.server.ecommerce.user.User;
 import com.server.ecommerce.utils.PriceUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -32,6 +31,9 @@ public class Cart implements Serializable {
 
     private LocalDateTime updatedAt;
 
+    @TimeToLive
+    private Long expiration;
+
 
     public long getTotal() {
         return this.items.stream()
@@ -46,4 +48,17 @@ public class Cart implements Serializable {
     public int getCartLength(){
         return this.items.size();
     }
+
+    public void setUpdatedAt(){
+        this.setUpdatedAt(LocalDateTime.now());
+    }
+
+    public void setCreatedAt(){
+        this.setCreatedAt(LocalDateTime.now());
+    }
+
+    public void setViewedAt(){
+        this.setViewedAt(LocalDateTime.now());
+    }
+
 }
