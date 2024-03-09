@@ -9,6 +9,8 @@ import com.server.ecommerce.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -118,5 +120,9 @@ public class ProductService {
     public boolean hasProductInInventory(Product product, long quantity){
         ProductInventory productInventory = product.getProductInventory();
         return productInventory.getAmount() >= quantity;
+    }
+
+    public List<Product> getProductsByIds(List<String> ids){
+        return productRepository.findByIdIn(ids);
     }
 }

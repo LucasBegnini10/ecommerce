@@ -16,15 +16,13 @@ public class CartItem {
 
     public CartItem(){}
 
-    public CartItem(Product product){
-        this(product, 1);
+    public CartItem(String productId){
+        this(productId, 1);
     }
 
-    public CartItem(Product product, long quantity){
+    public CartItem(String productId, long quantity){
         this.id = UUID.randomUUID().toString();
-        this.product = product;
-        this.product.setPictures(null);
-        this.product.setProductInventory(null);
+        this.productId = productId;
         this.quantity = quantity;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -32,9 +30,11 @@ public class CartItem {
 
     private String id;
 
-    private Product product;
+    private String productId;
 
     private long quantity;
+
+    private Product product;
 
     private LocalDateTime createdAt;
 
