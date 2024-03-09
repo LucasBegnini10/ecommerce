@@ -1,6 +1,7 @@
 package com.server.ecommerce.auth;
 
 import com.server.ecommerce.auth.dto.AuthDTO;
+import com.server.ecommerce.auth.dto.AuthResponseDTO;
 import com.server.ecommerce.token.TokenService;
 import com.server.ecommerce.user.User;
 import com.server.ecommerce.user.UserService;
@@ -44,12 +45,14 @@ public class AuthService {
         return userService.createUser(user);
     }
 
-    public String auth(AuthDTO authDTO){
+    public AuthResponseDTO auth(AuthDTO authDTO){
         Authentication authenticated = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authDTO.login(), authDTO.password())
         );
 
-        return tokenService.generateToken(authenticated);
+        String token = tokenService.generateToken(authenticated);
+
+        return new AuthResponseDTO((User) authenticated.getPrincipal(), token);
     }
 
     public User loadUserByToken(String token){

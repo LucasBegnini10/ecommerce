@@ -1,6 +1,7 @@
 package com.server.ecommerce.auth;
 
 import com.server.ecommerce.auth.dto.AuthDTO;
+import com.server.ecommerce.auth.dto.AuthResponseDTO;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.infra.RestResponseHandler;
 import jakarta.servlet.http.Cookie;
@@ -31,7 +32,8 @@ public class AuthController {
 
     @PostMapping
     public ResponseEntity<Object> auth(@RequestBody AuthDTO authDTO, HttpServletResponse response){
-        String token = authService.auth(authDTO);
+        AuthResponseDTO authResponseDTO = authService.auth(authDTO);
+        String token = authResponseDTO.token();
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(60 * 60);
@@ -40,7 +42,7 @@ public class AuthController {
         return RestResponseHandler.generateResponse(
                 "Authenticated",
                 HttpStatus.OK,
-                token
+                authResponseDTO
             );
     }
 
