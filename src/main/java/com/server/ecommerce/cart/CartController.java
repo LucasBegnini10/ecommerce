@@ -22,7 +22,7 @@ public class CartController {
 
 
     @GetMapping("user/{userId}")
-    public ResponseEntity<Object> getCart(@PathVariable UUID userId){
+    public ResponseEntity<Object> getCart(@PathVariable String userId){
         return RestResponseHandler.generateResponse(
                 "Cart by userId " + userId,
                 HttpStatus.OK,
@@ -53,7 +53,7 @@ public class CartController {
     }
 
     @DeleteMapping("user/{userId}/product/{productId}")
-    public ResponseEntity<Object> deleteProductToCart(@PathVariable UUID userId, @PathVariable UUID productId){
+    public ResponseEntity<Object> deleteProductToCart(@PathVariable String userId, @PathVariable String productId){
         cartService.deleteProductCart(userId, productId);
 
         return RestResponseHandler.generateResponse(
@@ -64,7 +64,7 @@ public class CartController {
     }
 
     @DeleteMapping("user/{userId}")
-    public ResponseEntity<Object> clearCart(@PathVariable UUID userId){
+    public ResponseEntity<Object> clearCart(@PathVariable String userId){
         cartService.clearCart(userId);
 
         return RestResponseHandler.generateResponse(

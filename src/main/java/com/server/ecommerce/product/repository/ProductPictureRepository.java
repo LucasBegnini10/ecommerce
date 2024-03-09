@@ -19,5 +19,5 @@ public interface ProductPictureRepository extends JpaRepository<ProductPicture, 
             "AND pp.picture_order > ?2", nativeQuery = true)
     @Modifying
     @Transactional
-    void updateIndexPicturesByProductIdAndDeletedIndex(UUID productId, int deletedIndex);
+    void updateIndexPicturesByProductIdAndDeletedIndex(String productId, int deletedIndex);
 }

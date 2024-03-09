@@ -112,7 +112,7 @@ public class RecoveryPasswordService {
         return recoveryPassword;
     }
 
-    private String generateToken(UUID userId){
+    private String generateToken(String userId){
         return userId + "$" + UUID.randomUUID();
     }
 

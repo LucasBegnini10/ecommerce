@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class ProductPictureService {
@@ -40,7 +39,7 @@ public class ProductPictureService {
         this.productService = productService;
     }
 
-    public void savePictures(UUID productId, List<MultipartFile> multipartFiles) throws IOException {
+    public void savePictures(String productId, List<MultipartFile> multipartFiles) throws IOException {
         Product product = productService.getProductById(productId);
         Set<ProductPicture> pictures = product.getPictures();
 
@@ -83,7 +82,7 @@ public class ProductPictureService {
         return currentQuantity + quantity <= MAX_PICTURES_BY_PRODUCT;
     }
 
-    private String getKeyNamePicture(UUID productId, File file){
+    private String getKeyNamePicture(String productId, File file){
         return String.format("%s/%s.png", productId, file.getName());
     }
 

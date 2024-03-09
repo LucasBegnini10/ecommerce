@@ -25,7 +25,7 @@ public class ProductService {
         this.productPriceTrackerService = productPriceTrackerService;
     }
 
-    public Product getProductById(UUID id){
+    public Product getProductById(String id){
         Optional<Product> productById = productRepository.findById(id);
 
         return productById.orElseThrow(ProductNotFoundException::new);
@@ -49,10 +49,12 @@ public class ProductService {
     }
 
     public Product create(ProductDTO productDTO){
-        return productRepository.save(buildProduct(new Product(), productDTO));
+        Product product = buildProduct(new Product(), productDTO);
+        product.setId(UUID.randomUUID().toString());
+        return productRepository.save(product);
     }
 
-    public Product update(UUID id, ProductDTO productDTO){
+    public Product update(String id, ProductDTO productDTO){
         Product product = getProductById(id);
 
         setProductPriceTracker(product, productDTO);
@@ -103,7 +105,7 @@ public class ProductService {
         return product;
     }
 
-    public void deleteProduct(UUID id){
+    public void deleteProduct(String id){
         Product product = getProductById(id);
 
         productRepository.delete(product);

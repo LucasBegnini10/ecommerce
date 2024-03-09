@@ -1,7 +1,7 @@
 package com.server.ecommerce.config;
 
 import com.server.ecommerce.filter.TokenValidatorFilter;
-import com.server.ecommerce.role.RoleType;
+import com.server.ecommerce.user.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,11 +44,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests)-> requests
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole(RoleType.ROLE_ADMIN.getRole())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole(RoleType.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole(RoleType.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole(RoleType.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**").hasRole(RoleType.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole(RoleType.ADMIN.getRole())
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers("api/v1/recovery-password/**").permitAll()
                         .anyRequest().authenticated()

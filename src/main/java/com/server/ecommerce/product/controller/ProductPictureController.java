@@ -24,7 +24,7 @@ public class ProductPictureController {
     }
 
     @PostMapping("{id}")
-    public ResponseEntity<Object> uploadPicture(@PathVariable UUID id, @RequestBody List<MultipartFile> files) {
+    public ResponseEntity<Object> uploadPicture(@PathVariable String id, @RequestBody List<MultipartFile> files) {
         try {
             productPictureService.savePictures(id, files);
 

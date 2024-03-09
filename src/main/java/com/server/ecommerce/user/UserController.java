@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users" )
@@ -34,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("{id}" )
-    public ResponseEntity<Object> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<Object> getUserById(@PathVariable String id) {
         return RestResponseHandler.generateResponse(
                 "User with id " + id,
                 HttpStatus.OK,
@@ -43,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping("{id}" )
-    public ResponseEntity<Object> updateUserById(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
+    public ResponseEntity<Object> updateUserById(@PathVariable String id, @RequestBody UserUpdateDTO userUpdateDTO) {
         return RestResponseHandler.generateResponse(
                 "User updated with id " + id,
                 HttpStatus.OK,
@@ -52,7 +51,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}" )
-    public ResponseEntity<Object> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Object> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
         return RestResponseHandler.generateResponse(
                 "User deleted with id " + id,
@@ -62,7 +61,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/picture" )
-    public ResponseEntity<Object> uploadImgPicture(@PathVariable UUID userId, @RequestBody MultipartFile file) {
+    public ResponseEntity<Object> uploadImgPicture(@PathVariable String userId, @RequestBody MultipartFile file) {
         try {
             userService.uploadImgPicture(userId, file);
 
@@ -81,7 +80,7 @@ public class UserController {
     }
 
     @PatchMapping("{userId}/password")
-    public ResponseEntity<Object> updatePassword(@PathVariable UUID userId, @RequestBody UserUpdatePasswordDTO userUpdatePasswordDTO){
+    public ResponseEntity<Object> updatePassword(@PathVariable String userId, @RequestBody UserUpdatePasswordDTO userUpdatePasswordDTO){
         userService.updatePassword(userId, userUpdatePasswordDTO);
 
 

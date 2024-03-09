@@ -34,7 +34,7 @@ public class ProductController {
 
     @PutMapping("{id}")
     public ResponseEntity<Object> update(
-            @PathVariable UUID id,
+            @PathVariable String id,
             @RequestBody ProductDTO productDTO
     ){
         return RestResponseHandler.generateResponse(
@@ -45,7 +45,7 @@ public class ProductController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Object> getProductById(@PathVariable UUID id){
+    public ResponseEntity<Object> getProductById(@PathVariable String id){
         return RestResponseHandler.generateResponse(
                 "Product found!",
                 HttpStatus.OK,
@@ -68,7 +68,7 @@ public class ProductController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> delete(@PathVariable UUID id){
+    public ResponseEntity<Object> delete(@PathVariable String id){
         productService.deleteProduct(id);
         return RestResponseHandler.generateResponse(
                 "Product deleted!",

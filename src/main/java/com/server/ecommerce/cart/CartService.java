@@ -13,12 +13,10 @@ import com.server.ecommerce.product.domain.Product;
 import com.server.ecommerce.product.service.ProductService;
 import com.server.ecommerce.user.User;
 import com.server.ecommerce.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 
 @Service
@@ -127,7 +125,7 @@ public class CartService {
         setDateTimeMetricsByEvent(cart, CartEventType.ADD_PRODUCT);
     }
 
-    public Cart getCartByUserId(UUID userId){
+    public Cart getCartByUserId(String userId){
         User user = userService.findUserById(userId);
         Cart cart = getCart(user);
 
@@ -156,7 +154,7 @@ public class CartService {
         saveCart(cart);
     }
 
-    public void deleteProductCart(UUID userId, UUID productId){
+    public void deleteProductCart(String userId, String productId){
         User user = userService.findUserById(userId);
         Product product = productService.getProductById(productId);
 
@@ -177,7 +175,7 @@ public class CartService {
         return cart.getItems().isEmpty();
     }
 
-    public void clearCart(UUID userId){
+    public void clearCart(String userId){
         User user = userService.findUserById(userId);
         clearCart(getCart(user));
     }

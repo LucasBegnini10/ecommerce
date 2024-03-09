@@ -1,11 +1,11 @@
-package com.server.ecommerce.role;
+package com.server.ecommerce.user;
 
 import lombok.Getter;
 
 @Getter
 public enum RoleType {
-    ROLE_USER("USER"),
-    ROLE_ADMIN("ADMIN");
+    USER("USER"),
+    ADMIN("ADMIN");
 
     private final String role;
 

@@ -3,7 +3,6 @@ package com.server.ecommerce.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.server.ecommerce.infra.BaseEntity;
-import com.server.ecommerce.role.Role;
 import com.server.ecommerce.recoveryPassword.RecoveryPassword;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,8 +21,7 @@ public class User extends BaseEntity implements UserDetails{
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     private String name;
 
@@ -38,8 +36,8 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "picture_url")
     private String pictureUrl;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Role> roles;
+    @Column(name = "role")
+    private RoleType role;
 
     @Column(name = "account_expired")
     private boolean accountExpired;
@@ -60,10 +58,7 @@ public class User extends BaseEntity implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        for(Role role: this.roles){
-            authorities.add(new SimpleGrantedAuthority(role.getName().toString()));
-        }
-
+        authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", role.getRole())));
         return authorities;
     }
 

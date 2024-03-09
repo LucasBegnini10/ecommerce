@@ -1,7 +1,6 @@
 package com.server.ecommerce.user;
 
 import com.server.ecommerce.file.FileService;
-import com.server.ecommerce.role.RoleService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.user.dto.UserUpdateDTO;
 import com.server.ecommerce.user.dto.UserUpdatePasswordDTO;
@@ -27,16 +26,13 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    private final RoleService roleService;
-
     private final PasswordUtils passwordUtils;
 
     private final FileService fileService;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleService roleService, PasswordUtils passwordUtils, FileService fileService){
+    public UserService(UserRepository userRepository, PasswordUtils passwordUtils, FileService fileService){
         this.userRepository = userRepository;
-        this.roleService = roleService;
         this.passwordUtils = passwordUtils;
         this.fileService = fileService;
     }
@@ -50,7 +46,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public User findUserById(UUID id) throws UserNotFoundException {
+    public User findUserById(String id) throws UserNotFoundException {
         return userRepository.findByIdAndIsEnabledTrue(id).orElseThrow(UserNotFoundException::new);
     }
 
@@ -65,6 +61,7 @@ public class UserService implements UserDetailsService {
     public User buildUserRegister(UserRegisterDTO userRegisterDTO){
         User user = new User();
 
+        user.setId(UUID.randomUUID().toString());
         user.setName(userRegisterDTO.getName());
         user.setEmail(userRegisterDTO.getEmail());
         user.setPhone(userRegisterDTO.getPhone());
@@ -72,7 +69,7 @@ public class UserService implements UserDetailsService {
         user.setAccountExpired(false);
         user.setAccountLocked(false);
         user.setCredentialsExpired(false);
-        user.setRoles(roleService.getBasicRoles());
+        user.setRole(RoleType.USER);
         user.setPassword(userRegisterDTO.getPassword());
 
         return user;
@@ -82,7 +79,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public User updateUser(UUID id, UserUpdateDTO userUpdateDTO){
+    public User updateUser(String id, UserUpdateDTO userUpdateDTO){
         User user = this.findUserById(id);
 
         user.setName(userUpdateDTO.name());
@@ -91,7 +88,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(UUID id){
+    public void deleteUser(String id){
         User user = this.findUserById(id);
 
         user.setEnabled(false);
@@ -107,7 +104,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void uploadImgPicture(UUID userId, MultipartFile multipartFile) throws IOException {
+    public void uploadImgPicture(String userId, MultipartFile multipartFile) throws IOException {
         User user = this.findUserById(userId);
 
         String key = user.getId() + "/picture_img.png";
@@ -124,7 +121,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void updatePassword(UUID userId, UserUpdatePasswordDTO userUpdatePasswordDTO){
+    public void updatePassword(String userId, UserUpdatePasswordDTO userUpdatePasswordDTO){
         User user = findUserById(userId);
 
         if(!passwordUtils.comparePwd(userUpdatePasswordDTO.currentPassword(), user.getPassword())){
