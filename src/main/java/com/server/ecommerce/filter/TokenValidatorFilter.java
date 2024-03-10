@@ -1,6 +1,5 @@
 package com.server.ecommerce.filter;
 
-import com.server.ecommerce.token.TokenService;
 import com.server.ecommerce.token.TokenServiceImpl;
 import com.server.ecommerce.token.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +23,7 @@ import java.util.Collection;
 public class TokenValidatorFilter extends OncePerRequestFilter {
 
 
-    private final TokenService tokenService;
+    private final TokenServiceImpl tokenService;
 
     @Autowired
     public TokenValidatorFilter(

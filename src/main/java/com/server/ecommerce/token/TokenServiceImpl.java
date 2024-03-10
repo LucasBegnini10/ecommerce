@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.*;
 
-@Service("tokenServiceImpl")
 public class TokenServiceImpl implements TokenService{
 
     @Value("${application.security.jwt.secret-key}")

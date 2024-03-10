@@ -2,13 +2,12 @@ package com.server.ecommerce.auth;
 
 import com.server.ecommerce.auth.dto.AuthDTO;
 import com.server.ecommerce.auth.dto.AuthResponseDTO;
-import com.server.ecommerce.token.TokenService;
+import com.server.ecommerce.token.TokenServiceImpl;
 import com.server.ecommerce.user.User;
 import com.server.ecommerce.user.UserService;
 import com.server.ecommerce.user.dto.UserRegisterDTO;
 import com.server.ecommerce.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,13 +23,13 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    private final TokenService tokenService;
+    private final TokenServiceImpl tokenService;
 
     @Autowired
     public AuthService(
             PasswordUtils passwordUtils,
             UserService userService,
-            @Qualifier("tokenServiceImpl") TokenService tokenService
+            TokenServiceImpl tokenService
     ){
         this.passwordUtils = passwordUtils;
         this.userService = userService;
