@@ -79,18 +79,17 @@ public class CartService {
     }
 
     private void setProductToCart(Cart cart, Product product) {
-        if (cartHasProduct(cart, product)) {
+        if (cartHasProduct(cart, product.getId())) {
             updateProductQuantityInCart(cart, product, MIN_QUANTITY_TO_ADD_IN_CART);
         } else {
             addNewProductToCart(cart, product);
         }
     }
 
-    private boolean cartHasProduct(Cart cart, Product product) {
+    private boolean cartHasProduct(Cart cart, String productId) {
         return cart.getItems().stream()
-                .anyMatch(item -> item.getProductId().equals(product.getId()));
+                .anyMatch(item -> item.getProductId().equals(productId));
     }
-
     private void updateProductQuantityInCart(Cart cart, Product product, long quantity) {
         validateInventoryOfProduct(product, quantity);
 
@@ -242,5 +241,9 @@ public class CartService {
 
     private void resetExpirationCart(Cart cart) {
         cart.setExpiration(TIME_EXPIRATION_CART);
+    }
+
+    public boolean productIsInCartOfUser(String userId, String productId){
+        return cartHasProduct(getCartByUserId(userId), productId);
     }
 }

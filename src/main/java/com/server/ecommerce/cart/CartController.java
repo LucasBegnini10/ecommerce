@@ -74,5 +74,14 @@ public class CartController {
         );
     }
 
+    @GetMapping("/user/{userId}/product/{productId}/exists")
+    public ResponseEntity<Object> productExistsInCart(@PathVariable String userId, @PathVariable String productId){
+        return RestResponseHandler.generateResponse(
+                "",
+                HttpStatus.OK,
+                cartService.productIsInCartOfUser(userId, productId)
+        );
+    }
+
 
 }
