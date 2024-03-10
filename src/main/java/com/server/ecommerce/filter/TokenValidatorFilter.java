@@ -1,6 +1,7 @@
 package com.server.ecommerce.filter;
 
 import com.server.ecommerce.token.TokenService;
+import com.server.ecommerce.token.TokenServiceImpl;
 import com.server.ecommerce.token.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +29,7 @@ public class TokenValidatorFilter extends OncePerRequestFilter {
 
     @Autowired
     public TokenValidatorFilter(
-            @Qualifier("tokenServiceImpl") TokenService tokenService
+            TokenServiceImpl tokenService
     ) {
         this.tokenService = tokenService;
     }
