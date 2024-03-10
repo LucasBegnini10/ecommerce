@@ -15,9 +15,15 @@ public class CacheConfig {
 
     @Bean
     public RedisConnectionFactory lettuceConnectionFactory() {
-        return new LettuceConnectionFactory(
-                new RedisStandaloneConfiguration()
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(
+                System.getenv("REDISHOST"),
+                Integer.parseInt(System.getenv("REDISPORT"))
         );
+
+        config.setPassword(System.getenv("REDISPASSWORD"));
+        config.setUsername(System.getenv("REDISUSER"));
+
+        return new LettuceConnectionFactory(config);
     }
 
     @Bean
