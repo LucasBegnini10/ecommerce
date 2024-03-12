@@ -40,6 +40,7 @@ public class TokenValidatorFilter extends OncePerRequestFilter {
 
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
+                    System.out.println("COOKIE ==> " + cookie.getName());
                     if ("token".equals(cookie.getName())) {
                         token = cookie.getValue();
                         break;
