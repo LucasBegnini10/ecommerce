@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-                    config.setAllowedOrigins(List.of("*"));
+                    config.setAllowedOrigins(List.of("https://ecommerce-web-ten-topaz.vercel.app", "http://ecommerce-web-ten-topaz.vercel.app", "https://ecommerce-web-ten-topaz.vercel.app/", "http://ecommerce-web-ten-topaz.vercel.app/"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
                     config.setAllowCredentials(true);
                     config.setExposedHeaders(List.of("Authorization", "token"));
